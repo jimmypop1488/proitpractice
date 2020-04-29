@@ -1,0 +1,61 @@
+balarama.db.elephantsql.com
+aglgmcrf
+Dow10dIr8aNIMmGa9PvHpaGCh4sYjstq
+postgres://aglgmcrf:Dow10dIr8aNIMmGa9PvHpaGCh4sYjstq@balarama.db.elephantsql.com:5432/aglgmcrf
+
+
+
+CREATE TABLE public.organization
+(
+    orgid uuid NOT NULL,
+    orgname character varying(255) NOT NULL,
+    headorgid uuid,
+    PRIMARY KEY (orgid)
+)
+WITH (
+    OIDS = FALSE
+);
+
+ALTER TABLE public.organization
+    OWNER to aglgmcrf;
+
+
+
+CREATE TABLE public.staff
+(
+    staffid uuid NOT NULL,
+    staffname character varying(255) NOT NULL,
+    stafforgid uuid NOT NULL,
+    headstaffid uuid,
+    PRIMARY KEY (staffid),
+    CONSTRAINT stafftoorg FOREIGN KEY (stafforgid)
+        REFERENCES public.organization (orgid) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        NOT VALID
+)
+WITH (
+    OIDS = FALSE
+);
+
+ALTER TABLE public.staff
+    OWNER to aglgmcrf;
+
+
+ALTER TABLE public.organization
+    ADD CONSTRAINT orgtoheadorg FOREIGN KEY (headorgid)
+    REFERENCES public.organization (orgid) MATCH SIMPLE
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
+    NOT VALID;
+
+
+ALTER TABLE public.staff
+    ADD CONSTRAINT stafftoheadstaff FOREIGN KEY (headstaffid)
+    REFERENCES public.staff (staffid) MATCH SIMPLE
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
+    NOT VALID;
+
+ALTER TABLE public.organization
+    ADD UNIQUE (orgname);
